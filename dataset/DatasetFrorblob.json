@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "errormes.json",
+				"fileName": "emp.csv",
 				"container": "datastore"
 			},
 			"columnDelimiter": ",",
