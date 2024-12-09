@@ -1,0 +1,137 @@
+{
+	"name": "pipelineforbulkcopy",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupForExternalControlTable",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "MySqlSource",
+						"query": {
+							"value": "SELECT * FROM @{pipeline().parameters.SchemaName}.@{pipeline().parameters.TableName}",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "MySqlDatasetForbulkcopy",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEachToCopyDataFromMysqlToDataLake",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LookupForExternalControlTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupForExternalControlTable').output.value",
+						"type": "Expression"
+					},
+					"batchCount": 3,
+					"activities": [
+						{
+							"name": "Copy data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource",
+									"query": {
+										"value": "@item().FilterQuery",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "MySqlDatasetForbulkcopy",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "gen2fordeltacopy",
+									"type": "DatasetReference",
+									"parameters": {
+										"dscontainer": {
+											"value": "@pipeline().parameters.DestinationContainer",
+											"type": "Expression"
+										},
+										"dsfolder": {
+											"value": "@pipeline().parameters.DestinationDirectory",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"SchemaName": {
+				"type": "string"
+			},
+			"TableName": {
+				"type": "string"
+			},
+			"DestinationContainer": {
+				"type": "string"
+			},
+			"DestinationDirectory": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-12-06T07:36:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

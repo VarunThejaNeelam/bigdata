@@ -1,0 +1,13 @@
+{
+	"name": "MySqlDatasetForbulkcopy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MySqlOnPremise_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
