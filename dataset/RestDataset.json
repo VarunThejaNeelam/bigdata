@@ -1,0 +1,12 @@
+{
+	"name": "RestDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
