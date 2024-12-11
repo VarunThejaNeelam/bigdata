@@ -77,6 +77,9 @@
 		"MySqlOnPremise_ls_properties_typeProperties_username": {
 			"value": "root"
 		},
+		"RestLinkedService_properties_typeProperties_url": {
+			"value": "https://reqres.in/api/users"
+		},
 		"containerUri": {
 			"value": ""
 		},
